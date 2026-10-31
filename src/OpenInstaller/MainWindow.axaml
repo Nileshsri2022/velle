@@ -1,0 +1,80 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="640"
+        x:Class="OpenInstaller.MainWindow"
+        Title="OpenInstaller"
+        Width="900" Height="640" MinWidth="640" MinHeight="480"
+        Background="#121212" Foreground="#F2F2F2"
+        WindowStartupLocation="CenterScreen">
+  <Grid RowDefinitions="Auto,Auto,*,Auto,Auto,Auto" Margin="16">
+    <!-- Header -->
+    <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="12" Margin="0,0,0,12">
+      <TextBlock Text="OpenInstaller" FontSize="24" FontWeight="Bold" VerticalAlignment="Center" />
+      <TextBlock Text="Install Windows apps with the public winget CLI."
+                 Foreground="#B0B0B0" VerticalAlignment="Center" TextWrapping="Wrap" />
+      <TextBlock Text="{Binding WingetVersion}" Foreground="#B0B0B0"
+                 VerticalAlignment="Center" Margin="12,0,0,0" />
+    </StackPanel>
+
+    <!-- Search -->
+    <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="0,0,0,12">
+      <TextBox Grid.Column="0" Text="{Binding Query}" Watermark="Search by app name or package id, e.g. VideoLAN.VLC"
+               Margin="0,0,8,0" />
+      <Button Grid.Column="1" Content="Search" Click="OnSearchClick"
+              IsEnabled="{Binding !IsBusy}" MinWidth="100" />
+    </Grid>
+
+    <!-- Results + details -->
+    <Grid Grid.Row="2" ColumnDefinitions="1.2*,*">
+      <Border Grid.Column="0" BorderBrush="#333333" BorderThickness="1" CornerRadius="6" Margin="0,0,8,0">
+        <ListBox ItemsSource="{Binding Results}" SelectedItem="{Binding SelectedPackage}"
+                 Background="Transparent">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding DisplayText}" TextWrapping="Wrap" />
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </Border>
+
+      <StackPanel Grid.Column="1" Spacing="8" Margin="8,0,0,0">
+        <TextBlock Text="Selected package" FontWeight="SemiBold" FontSize="15" />
+        <TextBlock Text="{Binding SelectedPackage.Name}" FontSize="17" FontWeight="Bold" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding SelectedPackage.Id}" Foreground="#B0B0B0" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding SelectedPackage.Description}" Foreground="#D0D0D0" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding SelectedPackage.Publisher, StringFormat='Publisher: {0}'}" Foreground="#B0B0B0" TextWrapping="Wrap" />
+        <Separator Background="#333333" />
+        <TextBlock Text="{Binding InstalledStatus}" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding AvailableVersion, StringFormat='Latest version: {0}'}" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding UpdateStatus}" TextWrapping="Wrap" Foreground="#8FD0FF" />
+        <WrapPanel Orientation="Horizontal">
+          <Button Content="Install" Click="OnInstallClick" IsEnabled="{Binding !IsBusy}" Margin="0,0,8,8" MinWidth="90" />
+          <Button Content="Update" Click="OnUpdateClick" IsEnabled="{Binding !IsBusy}" Margin="0,0,8,8" MinWidth="90" />
+          <Button Content="Launch" Click="OnLaunchClick" IsEnabled="{Binding !IsBusy}" Margin="0,0,8,8" MinWidth="90" />
+          <Button Content="Cancel" Click="OnCancelClick" IsEnabled="{Binding IsInstalling}" Margin="0,0,8,8" MinWidth="90" />
+          <Button Content="Retry" Click="OnRetryClick" IsEnabled="{Binding !IsBusy}" Margin="0,0,8,8" MinWidth="90" />
+          <Button Content="Refresh status" Click="OnRefreshClick" IsEnabled="{Binding !IsBusy}" Margin="0,0,8,8" MinWidth="110" />
+        </WrapPanel>
+        <TextBlock Text="Install uses winget with the package's own installer. Cancel stops the running winget process. Launch is best-effort: some apps must be opened from the Start menu."
+                   Foreground="#909090" FontSize="12" TextWrapping="Wrap" />
+      </StackPanel>
+    </Grid>
+
+    <!-- Progress + status -->
+    <StackPanel Grid.Row="3" Spacing="6" Margin="0,12,0,0">
+      <ProgressBar Value="{Binding ProgressValue}" IsIndeterminate="{Binding ProgressIndeterminate}"
+                   Minimum="0" Maximum="100" Height="8" />
+      <TextBlock Text="{Binding StatusText}" TextWrapping="Wrap" />
+    </StackPanel>
+
+    <!-- Log -->
+    <TextBox Grid.Row="4" Text="{Binding LogText}" IsReadOnly="True" AcceptsReturn="True"
+             Height="130" Margin="0,8,0,0" FontFamily="Consolas, monospace" FontSize="12" />
+
+    <!-- Footer -->
+    <TextBlock Grid.Row="5" Margin="0,8,0,0" FontSize="12" Foreground="#909090" TextWrapping="Wrap"
+               Text="Original open-source project. It is not affiliated with, or a copy of, any other installer application. It only drives the public winget CLI." />
+  </Grid>
+</Window>

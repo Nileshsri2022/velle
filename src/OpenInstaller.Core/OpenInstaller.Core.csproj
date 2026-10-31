@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>OpenInstaller.Core</AssemblyName>
+    <RootNamespace>OpenInstaller</RootNamespace>
+    <Description>Core winget wrapper and output parser for OpenInstaller. No UI code lives here.</Description>
+  </PropertyGroup>
+</Project>
