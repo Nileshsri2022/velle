@@ -17,6 +17,9 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private string _currentTab = "Clipboard";
     private string _filter = "All";
     private string _statusText = "OpenNotch is ready. Copy something, then press Refresh clipboard.";
+    private string _copyButtonText = "Copy";
+    private bool _showToast;
+    private string _toastText = "";
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -31,7 +34,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ClipboardItem? SelectedItem
     {
         get => _selected;
-        set { _selected = value; OnChanged(); OnChanged(nameof(SelectedPreview)); OnChanged(nameof(SelectedMetaText)); OnChanged(nameof(PinButtonText)); }
+        set { _selected = value; CopyButtonText = "Copy"; OnChanged(); OnChanged(nameof(SelectedPreview)); OnChanged(nameof(SelectedMetaText)); OnChanged(nameof(PinButtonText)); OnChanged(nameof(IsSelectedLink)); OnChanged(nameof(SelectedDomain)); }
     }
 
     public bool IsExpanded
@@ -44,6 +47,18 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public string PinButtonText => SelectedItem?.Pinned == true ? "Unpin" : "Pin";
     public string SelectedPreview => SelectedItem?.Text ?? "Select an item to preview it here.";
     public string SelectedMetaText => SelectedItem is null ? "" : SelectedItem.MetaText;
+    public string CopyButtonText { get => _copyButtonText; set { _copyButtonText = value; OnChanged(); } }
+    public bool ShowToast { get => _showToast; set { _showToast = value; OnChanged(); } }
+    public string ToastText { get => _toastText; set { _toastText = value; OnChanged(); } }
+    public bool IsSelectedLink => SelectedItem?.Kind == ClipboardKind.Link;
+    public string SelectedDomain
+    {
+        get
+        {
+            if (SelectedItem?.Kind != ClipboardKind.Link) return "";
+            return Uri.TryCreate(SelectedItem.Text, UriKind.Absolute, out var uri) ? uri.Host : "";
+        }
+    }
     public string Filter
     {
         get => _filter;
@@ -74,9 +89,21 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public string? CopySelected()
     {
         if (SelectedItem is null) { StatusText = "Select an item first."; return null; }
+        CopyButtonText = "✓ Copied";
+        ToastText = SelectedItem.Kind == ClipboardKind.Link ? "Copied - Link" : "Copied - Text";
+        ShowToast = true;
         StatusText = "Copied back to the clipboard.";
         return SelectedItem.Text;
     }
+
+    public void ClearToastAndCollapse()
+    {
+        ShowToast = false;
+        CopyButtonText = "Copy";
+        IsExpanded = false;
+    }
+
+    public void ShowSettingsNote() => StatusText = "Settings — coming next, step by step.";
 
     public void TogglePinSelected()
     {

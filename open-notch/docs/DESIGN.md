@@ -49,3 +49,11 @@
 - Link = single URL with no spaces; Text = everything else; Image = 0 in v1.
 - Browser preview updated with the same Step 1 UI. Push to velle still
   blocked until user approves this preview + push layout.
+
+## UI redesign (done after user video, pushed after v1)
+- Panel like in the video: large dark panel, header "Clipboard — count"
+  + Settings (placeholder), filters + list + preview, bottom nav via
+  TabStripPlacement=Bottom (not top tabs), orange Copy button
+  (#FF8C00), Copied toast top-centre + panel collapse after 1.5s,
+  Open link button (domain shown) for Link items only.
+- Original code/icons/name only; no Vayli assets, logo, or code reused.

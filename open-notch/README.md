@@ -8,6 +8,14 @@ use another app's code, name, logo, assets, publisher identity, or
 licence/trial system. It is built from scratch, in the same general
 spirit: a small top-centre notch you can reach for all day.
 
+## UI redesign — like in the video (after v1 push)
+
+- Large dark panel, header "Clipboard — count" + Settings, filters +
+  list + preview, **bottom nav** (not top tabs)
+- Orange **Copy** button, **✓ Copied** + top-centre toast, then panel collapses
+- **Open link** button + domain for Link items only
+- Original code/icons/name only; no other app's assets or code reused.
+
 ## Step 1 — Full UI (done first, step by step)
 
 - Collapsed top-centre notch pill: OpenNotch + clipboard count + Expand/Collapse + Close

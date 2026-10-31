@@ -2,16 +2,23 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="720" d:DesignHeight="560"
+        mc:Ignorable="d" d:DesignWidth="760" d:DesignHeight="620"
         x:Class="OpenNotch.MainWindow"
         Title="OpenNotch"
-        Width="720" Height="560" MinWidth="560" MinHeight="360"
+        Width="760" Height="620" MinWidth="600" MinHeight="400"
         Background="#0B0B0C" Foreground="#F2F2F2"
         Topmost="True" SystemDecorations="None"
         WindowStartupLocation="CenterScreen">
-  <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="12">
-    <!-- Collapsed notch pill / header -->
-    <Border Grid.Row="0" Background="#1A1A1C" CornerRadius="24" Padding="14,10" Margin="0,0,0,10">
+  <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" Margin="12">
+    <!-- Toast, top-centre, like in the video -->
+    <Border Grid.Row="0" IsVisible="{Binding ShowToast}" HorizontalAlignment="Center"
+            Background="#222222" BorderBrush="#444444" BorderThickness="1" CornerRadius="20"
+            Padding="16,8" Margin="0,0,0,8">
+      <TextBlock Text="{Binding ToastText}" FontWeight="SemiBold" />
+    </Border>
+
+    <!-- Notch pill (collapsed state) -->
+    <Border Grid.Row="1" Background="#1A1A1C" CornerRadius="24" Padding="14,10" Margin="0,0,0,10">
       <Grid ColumnDefinitions="*,Auto,Auto">
         <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
           <TextBlock Text="●" Foreground="#7DD87D" FontSize="18" VerticalAlignment="Center" />
@@ -23,8 +30,17 @@
       </Grid>
     </Border>
 
-    <!-- Expanded panel: full UI, step 1 -->
-    <TabControl Grid.Row="1" Grid.RowSpan="2" IsVisible="{Binding IsExpanded}" Margin="0,0,0,10">
+    <!-- Panel header, like in the video: Clipboard — count, settings, close -->
+    <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="0,0,0,10" IsVisible="{Binding IsExpanded}">
+      <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+        <TextBlock Text="Clipboard" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" />
+        <TextBlock Text="{Binding CountText}" Foreground="#B0B0B0" VerticalAlignment="Center" />
+      </StackPanel>
+      <Button Grid.Column="1" Content="⚙ Settings" Click="OnSettingsClick" />
+    </Grid>
+
+    <!-- Panel content, bottom nav via TabStripPlacement=Bottom, like in the video -->
+    <TabControl Grid.Row="3" TabStripPlacement="Bottom" IsVisible="{Binding IsExpanded}" Margin="0,0,0,10">
       <TabItem Header="Clipboard">
         <Grid RowDefinitions="Auto,*,Auto,Auto" Margin="4">
           <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,8">
@@ -45,7 +61,10 @@
               <ListBox ItemsSource="{Binding VisibleItems}" SelectedItem="{Binding SelectedItem}" Background="Transparent">
                 <ListBox.ItemTemplate>
                   <DataTemplate>
-                    <TextBlock Text="{Binding DisplayText}" TextWrapping="Wrap" />
+                    <StackPanel Spacing="2">
+                      <TextBlock Text="{Binding DisplayText}" TextWrapping="Wrap" />
+                      <TextBlock Text="{Binding MetaText}" Foreground="#909090" FontSize="12" />
+                    </StackPanel>
                   </DataTemplate>
                 </ListBox.ItemTemplate>
               </ListBox>
@@ -54,13 +73,15 @@
               <TextBlock Text="Preview" FontWeight="SemiBold" />
               <TextBox Text="{Binding SelectedPreview}" IsReadOnly="True" AcceptsReturn="True" Height="140" TextWrapping="Wrap" />
               <TextBlock Text="{Binding SelectedMetaText}" Foreground="#B0B0B0" TextWrapping="Wrap" />
+              <TextBlock Text="{Binding SelectedDomain}" Foreground="#8FD0FF" TextWrapping="Wrap" IsVisible="{Binding IsSelectedLink}" />
               <WrapPanel Orientation="Horizontal">
-                <Button Content="Copy" Click="OnCopyClick" Margin="0,0,8,8" MinWidth="80" />
+                <Button Content="{Binding CopyButtonText}" Click="OnCopyClick" Background="#FF8C00" Foreground="White" FontWeight="Bold" Margin="0,0,8,8" MinWidth="110" />
+                <Button Content="Open link" Click="OnOpenLinkClick" IsVisible="{Binding IsSelectedLink}" Margin="0,0,8,8" MinWidth="100" />
                 <Button Content="{Binding PinButtonText}" Click="OnPinClick" Margin="0,0,8,8" MinWidth="80" />
                 <Button Content="Delete" Click="OnDeleteClick" Margin="0,0,8,8" MinWidth="80" />
                 <Button Content="Clear unpinned" Click="OnClearClick" Margin="0,0,8,8" MinWidth="110" />
               </WrapPanel>
-              <TextBlock Text="Copy something in any app, then press Refresh clipboard. Polling also checks once a second. Pinned items are never trimmed." Foreground="#909090" FontSize="12" TextWrapping="Wrap" />
+              <TextBlock Text="Copy something in any app, then press Refresh clipboard. Polling also checks once a second. Pinned items are never trimmed. Images are not stored yet — coming in Step 2." Foreground="#909090" FontSize="12" TextWrapping="Wrap" />
             </StackPanel>
           </Grid>
           <TextBlock Grid.Row="2" Text="{Binding StatusText}" TextWrapping="Wrap" Margin="0,8,0,0" />
@@ -106,7 +127,7 @@
     </TabControl>
 
     <!-- Footer -->
-    <TextBlock Grid.Row="3" FontSize="12" Foreground="#909090" TextWrapping="Wrap"
+    <TextBlock Grid.Row="4" FontSize="12" Foreground="#909090" TextWrapping="Wrap"
                Text="OpenNotch — original open-source project. Free forever: no trial, no account, no licence server, no network in v1. It is not affiliated with, or a copy of, any other notch application." />
   </Grid>
 </Window>

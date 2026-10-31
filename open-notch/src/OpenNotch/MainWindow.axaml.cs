@@ -71,12 +71,37 @@ public partial class MainWindow : Window
     private async void OnCopyClick(object? sender, RoutedEventArgs e)
     {
         var text = Vm?.CopySelected();
-        if (text is null) return;
+        if (text is null || Vm is null) return;
         var clipboard = TopLevel.GetTopLevel(this)?.Clipboard;
         if (clipboard is null) return;
         _lastSetByUs = text;
         await clipboard.SetTextAsync(text);
+        // Like in the video: show the toast, then collapse the panel.
+        var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1.5) };
+        timer.Tick += (_, _) => { timer.Stop(); Vm.ClearToastAndCollapse(); };
+        timer.Start();
     }
+
+    private void OnOpenLinkClick(object? sender, RoutedEventArgs e)
+    {
+        var text = Vm?.SelectedItem?.Text;
+        if (string.IsNullOrWhiteSpace(text) || Vm is null) return;
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = text.Trim(),
+                UseShellExecute = true,
+            });
+            Vm.StatusText = "Opened link in your browser.";
+        }
+        catch (Exception ex)
+        {
+            Vm.StatusText = "Could not open link: " + ex.Message;
+        }
+    }
+
+    private void OnSettingsClick(object? sender, RoutedEventArgs e) => Vm?.ShowSettingsNote();
 
     private void OnPinClick(object? sender, RoutedEventArgs e) => Vm?.TogglePinSelected();
     private void OnFilterAllClick(object? sender, RoutedEventArgs e) { if (Vm is not null) Vm.Filter = "All"; }
