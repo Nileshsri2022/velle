@@ -1,0 +1,112 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="720" d:DesignHeight="560"
+        x:Class="OpenNotch.MainWindow"
+        Title="OpenNotch"
+        Width="720" Height="560" MinWidth="560" MinHeight="360"
+        Background="#0B0B0C" Foreground="#F2F2F2"
+        Topmost="True" SystemDecorations="None"
+        WindowStartupLocation="CenterScreen">
+  <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="12">
+    <!-- Collapsed notch pill / header -->
+    <Border Grid.Row="0" Background="#1A1A1C" CornerRadius="24" Padding="14,10" Margin="0,0,0,10">
+      <Grid ColumnDefinitions="*,Auto,Auto">
+        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+          <TextBlock Text="●" Foreground="#7DD87D" FontSize="18" VerticalAlignment="Center" />
+          <TextBlock Text="OpenNotch" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" />
+          <TextBlock Text="{Binding CountText}" Foreground="#B0B0B0" VerticalAlignment="Center" />
+        </StackPanel>
+        <Button Grid.Column="1" Content="{Binding ExpandButtonText}" Click="OnExpandClick" Margin="0,0,8,0" />
+        <Button Grid.Column="2" Content="✕ Close" Click="OnCloseClick" />
+      </Grid>
+    </Border>
+
+    <!-- Expanded panel: full UI, step 1 -->
+    <TabControl Grid.Row="1" Grid.RowSpan="2" IsVisible="{Binding IsExpanded}" Margin="0,0,0,10">
+      <TabItem Header="Clipboard">
+        <Grid RowDefinitions="Auto,*,Auto,Auto" Margin="4">
+          <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,8">
+            <WrapPanel Orientation="Horizontal">
+              <Button Content="All" Click="OnFilterAllClick" Margin="0,0,6,0" />
+              <Button Content="Text" Click="OnFilterTextClick" Margin="0,0,6,0" />
+              <Button Content="Images" Click="OnFilterImagesClick" Margin="0,0,6,0" />
+              <Button Content="Links" Click="OnFilterLinksClick" Margin="0,0,6,0" />
+              <TextBlock Text="{Binding FilterCountsText}" Foreground="#B0B0B0" VerticalAlignment="Center" />
+            </WrapPanel>
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBox Grid.Column="0" Text="{Binding SearchText}" Watermark="Search clipboard history…" Margin="0,0,8,0" />
+              <Button Grid.Column="1" Content="Refresh clipboard" Click="OnRefreshClick" />
+            </Grid>
+          </StackPanel>
+          <Grid Grid.Row="1" ColumnDefinitions="1.1*,*">
+            <Border Grid.Column="0" BorderBrush="#333333" BorderThickness="1" CornerRadius="6" Margin="0,0,8,0">
+              <ListBox ItemsSource="{Binding VisibleItems}" SelectedItem="{Binding SelectedItem}" Background="Transparent">
+                <ListBox.ItemTemplate>
+                  <DataTemplate>
+                    <TextBlock Text="{Binding DisplayText}" TextWrapping="Wrap" />
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+            </Border>
+            <StackPanel Grid.Column="1" Spacing="8" Margin="8,0,0,0">
+              <TextBlock Text="Preview" FontWeight="SemiBold" />
+              <TextBox Text="{Binding SelectedPreview}" IsReadOnly="True" AcceptsReturn="True" Height="140" TextWrapping="Wrap" />
+              <TextBlock Text="{Binding SelectedMetaText}" Foreground="#B0B0B0" TextWrapping="Wrap" />
+              <WrapPanel Orientation="Horizontal">
+                <Button Content="Copy" Click="OnCopyClick" Margin="0,0,8,8" MinWidth="80" />
+                <Button Content="{Binding PinButtonText}" Click="OnPinClick" Margin="0,0,8,8" MinWidth="80" />
+                <Button Content="Delete" Click="OnDeleteClick" Margin="0,0,8,8" MinWidth="80" />
+                <Button Content="Clear unpinned" Click="OnClearClick" Margin="0,0,8,8" MinWidth="110" />
+              </WrapPanel>
+              <TextBlock Text="Copy something in any app, then press Refresh clipboard. Polling also checks once a second. Pinned items are never trimmed." Foreground="#909090" FontSize="12" TextWrapping="Wrap" />
+            </StackPanel>
+          </Grid>
+          <TextBlock Grid.Row="2" Text="{Binding StatusText}" TextWrapping="Wrap" Margin="0,8,0,0" />
+          <TextBlock Grid.Row="3" Text="Clipboard is text-only in v1. Images and files are not stored yet." Foreground="#909090" FontSize="12" TextWrapping="Wrap" />
+        </Grid>
+      </TabItem>
+      <TabItem Header="Timers">
+        <StackPanel Spacing="8" Margin="8">
+          <TextBlock Text="Timers" FontSize="18" FontWeight="Bold" />
+          <TextBlock Text="Coming next, step by step: stopwatch and countdown timers will live here. This tab is UI only in v1 — no timer runs yet." TextWrapping="Wrap" Foreground="#B0B0B0" />
+        </StackPanel>
+      </TabItem>
+      <TabItem Header="Notes">
+        <StackPanel Spacing="8" Margin="8">
+          <TextBlock Text="Notes" FontSize="18" FontWeight="Bold" />
+          <TextBlock Text="Coming next, step by step: quick notes will live here. This tab is UI only in v1." TextWrapping="Wrap" Foreground="#B0B0B0" />
+        </StackPanel>
+      </TabItem>
+      <TabItem Header="Shelf">
+        <StackPanel Spacing="8" Margin="8">
+          <TextBlock Text="File shelf" FontSize="18" FontWeight="Bold" />
+          <TextBlock Text="Coming next, step by step: park files here while you work. This tab is UI only in v1." TextWrapping="Wrap" Foreground="#B0B0B0" />
+        </StackPanel>
+      </TabItem>
+      <TabItem Header="Weather">
+        <StackPanel Spacing="8" Margin="8">
+          <TextBlock Text="Weather" FontSize="18" FontWeight="Bold" />
+          <TextBlock Text="Coming next, step by step: weather will live here, only if you enable it. This tab is UI only in v1 — no network call is made." TextWrapping="Wrap" Foreground="#B0B0B0" />
+        </StackPanel>
+      </TabItem>
+      <TabItem Header="Screen Time">
+        <StackPanel Spacing="8" Margin="8">
+          <TextBlock Text="Screen Time" FontSize="18" FontWeight="Bold" />
+          <TextBlock Text="Coming next, step by step: foreground-app time will live here. This tab is UI only in v1 — nothing is tracked yet." TextWrapping="Wrap" Foreground="#B0B0B0" />
+        </StackPanel>
+      </TabItem>
+      <TabItem Header="Media">
+        <StackPanel Spacing="8" Margin="8">
+          <TextBlock Text="Media" FontSize="18" FontWeight="Bold" />
+          <TextBlock Text="Coming next, step by step: now-playing controls will live here. This tab is UI only in v1." TextWrapping="Wrap" Foreground="#B0B0B0" />
+        </StackPanel>
+      </TabItem>
+    </TabControl>
+
+    <!-- Footer -->
+    <TextBlock Grid.Row="3" FontSize="12" Foreground="#909090" TextWrapping="Wrap"
+               Text="OpenNotch — original open-source project. Free forever: no trial, no account, no licence server, no network in v1. It is not affiliated with, or a copy of, any other notch application." />
+  </Grid>
+</Window>
